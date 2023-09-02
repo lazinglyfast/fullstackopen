@@ -1,7 +1,7 @@
 const Header = (props) => <h1>{props.course}</h1> 
 
 // not a fan of too much horizontal span, just testing whether I could do this
-const Content = (props) => props.entries.map((e, i) => <p key={i}>{e.name} {e.count}</p>)
+const Part = (props) => <p>{props.name} {props.count}</p>
 
 const Total = (props) => <p>Number of exercises {props.entries.length}</p>
 
@@ -21,11 +21,11 @@ const App = () => {
     ]
 
     return (
-        <div>
+        <>
             <Header course={course} />
-            <Content entries={entries}/>
+            {entries.map((e, i) => <Part key={i} name={e.name} count={e.count}/>)}
             <Total entries={entries}/>
-        </div>
+        </>
     )
 }
 
