@@ -6,41 +6,41 @@ Header.propTypes = {
   course: PropTypes.string
 }
 
-const Part = (props) => <p>{props.name} {props.count}</p>
-Part.propTypes = {
-  name: PropTypes.string,
-  count: PropTypes.number
+let partsPropTypes = {
+  parts: PropTypes.arrayOf(
+    PropTypes.shape({ name: PropTypes.string, exercises: PropTypes.number })
+  )
 }
 
-const Total = (props) => <p>Number of exercises {props.total}</p>
-Total.propTypes = {
-  total: PropTypes.number,
+const Content = (props) => {
+  return (props.parts.map((part, i) => <p key={i}>{part.name} {part.exercises}</p>))
 }
+Content.propTypes = partsPropTypes
+
+const Total = (props) => <p>Number of exercises {props.parts.length}</p>
+Total.propTypes = partsPropTypes
 
 const App = () => {
   const course = "Half Stack application development"
-  const part1 = {
-    name: "Fundamentals of React",
-    exercises: 10,
-  }
-
-  const part2 = {
-    name: "Using props to pass data",
-    exercises: 7,
-  }
-
-  const part3 = {
-    name: "State of a component",
-    exercises: 14,
-  }
-
-  var entries = [part1, part2, part3]
-
+  const parts = [
+    {
+      name: "Fundamentals of React",
+      exercises: 10,
+    },
+    {
+      name: "Using props to pass data",
+      exercises: 7,
+    },
+    {
+      name: "State of a component",
+      exercises: 14,
+    }
+  ]
   return (
     <>
       <Header course={course} />
-      {entries.map((e, i) => <Part key={i} name={e.name} count={e.count} />)}
-      <Total total={entries.length} />
+      <Content parts={parts} />
+      <Total parts={parts} />
     </>
   )
 }
