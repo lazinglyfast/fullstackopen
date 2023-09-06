@@ -20,34 +20,9 @@ const App = () => {
       <Button handleClick={() => setNeutral(neutral + 1)} text="neutral" />
       <Button handleClick={() => setBad(bad + 1)} text="bad" />
       <h2>statistics</h2>
-      <Leaderboard feedback={feedback} />
+      <Statistics feedback={feedback} />
     </div>
   )
-}
-
-const Leaderboard = ({ feedback }) => {
-  const { all, good, neutral, bad } = feedback
-  if (all === 0) {
-    return <p> No feedback given </p>
-  }
-  return (
-    <>
-      <Statistics stat={good} name="good" />
-      <Statistics stat={neutral} name="neutral" />
-      <Statistics stat={bad} name="bad" />
-      <Statistics stat={all} />
-      <Statistics stat={(good - bad) / all} />
-      <Statistics stat={good / all} displayAsPercentage />
-    </>
-  )
-}
-Leaderboard.propTypes = {
-  feedback: PropTypes.shape({
-    all: PropTypes.number,
-    good: PropTypes.number,
-    neutral: PropTypes.number,
-    bad: PropTypes.number,
-  }),
 }
 
 const Button = ({ handleClick, text }) => <button onClick={handleClick}>{text}</button>
@@ -56,15 +31,40 @@ Button.propTypes = {
   text: PropTypes.string,
 }
 
-const Statistics = ({ stat, name, displayAsPercentage }) => {
-  if (displayAsPercentage) {
-    return <p> {name} {stat * 100} % </p>
+const Statistics = ({ feedback }) => {
+  const { all, good, neutral, bad } = feedback
+  if (all === 0) {
+    return <p> No feedback given </p>
   }
-  return <p> {name} {stat} </p>
+  return (
+    <>
+      <StatisticsLine text="good" value={good} />
+      <StatisticsLine text="neutral" value={neutral} />
+      <StatisticsLine text="bad" value={bad} />
+      <StatisticsLine value={all} />
+      <StatisticsLine value={(good - bad) / all} />
+      <StatisticsLine value={good / all} displayAsPercentage />
+    </>
+  )
 }
 Statistics.propTypes = {
-  stat: PropTypes.number,
-  name: PropTypes.string,
+  feedback: PropTypes.shape({
+    all: PropTypes.number,
+    good: PropTypes.number,
+    neutral: PropTypes.number,
+    bad: PropTypes.number,
+  }),
+}
+
+const StatisticsLine = ({ text, value, displayAsPercentage }) => {
+  if (displayAsPercentage) {
+    return <p> {text} {value * 100} % </p>
+  }
+  return <p> {text} {value} </p>
+}
+StatisticsLine.propTypes = {
+  text: PropTypes.string,
+  value: PropTypes.number,
   displayAsPercentage: PropTypes.bool,
 }
 
