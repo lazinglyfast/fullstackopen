@@ -37,14 +37,16 @@ const Statistics = ({ feedback }) => {
     return <p> No feedback given </p>
   }
   return (
-    <>
-      <StatisticsLine text="good" value={good} />
-      <StatisticsLine text="neutral" value={neutral} />
-      <StatisticsLine text="bad" value={bad} />
-      <StatisticsLine value={all} />
-      <StatisticsLine value={(good - bad) / all} />
-      <StatisticsLine value={good / all} displayAsPercentage />
-    </>
+    <table>
+      <tbody>
+        <StatisticsLine text="good" value={good} />
+        <StatisticsLine text="neutral" value={neutral} />
+        <StatisticsLine text="bad" value={bad} />
+        <StatisticsLine text="all" value={all} />
+        <StatisticsLine text="average" value={(good - bad) / all} />
+        <StatisticsLine text="positive" value={(good / all) * 100 + " %"} />
+      </tbody>
+    </table>
   )
 }
 Statistics.propTypes = {
@@ -56,16 +58,17 @@ Statistics.propTypes = {
   }),
 }
 
-const StatisticsLine = ({ text, value, displayAsPercentage }) => {
-  if (displayAsPercentage) {
-    return <p> {text} {value * 100} % </p>
-  }
-  return <p> {text} {value} </p>
+const StatisticsLine = ({ text, value }) => {
+  return (
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
+  )
 }
 StatisticsLine.propTypes = {
   text: PropTypes.string,
   value: PropTypes.number,
-  displayAsPercentage: PropTypes.bool,
 }
 
 export default App
