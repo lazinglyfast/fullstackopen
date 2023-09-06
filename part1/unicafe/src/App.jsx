@@ -15,12 +15,12 @@ const App = () => {
       <Button handleClick={() => setNeutral(neutral + 1)} text="neutral" />
       <Button handleClick={() => setBad(bad + 1)} text="bad" />
       <h2>statistics</h2>
-      <p>good {good}</p>
-      <p>neutral {neutral}</p>
-      <p>bad {bad}</p>
-      <p>all {all}</p>
-      <Stat stat={(good - bad) / all} />
-      <Stat stat={good / all} displayAsPercentage />
+      <Statistics stat={good} name="good" />
+      <Statistics stat={neutral} name="neutral" />
+      <Statistics stat={bad} name="bad" />
+      <Statistics stat={all} />
+      <Statistics stat={(good - bad) / all} />
+      <Statistics stat={good / all} displayAsPercentage />
     </div>
   )
 }
@@ -31,17 +31,18 @@ Button.propTypes = {
   text: PropTypes.string,
 }
 
-const Stat = ({ stat, displayAsPercentage }) => {
+const Statistics = ({ stat, name, displayAsPercentage }) => {
   if (isNaN(stat)) {
     return <p> Waiting on feedback to compute statistics... </p>
   }
   if (displayAsPercentage) {
-    return <p> {stat * 100} % </p>
+    return <p> {name} {stat * 100} % </p>
   }
-  return <p> {stat} </p>
+  return <p> {name} {stat} </p>
 }
-Stat.propTypes = {
+Statistics.propTypes = {
   stat: PropTypes.number,
+  name: PropTypes.string,
   displayAsPercentage: PropTypes.bool,
 }
 
