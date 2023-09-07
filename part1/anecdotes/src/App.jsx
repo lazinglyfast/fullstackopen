@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { PropTypes } from 'prop-types'
 
 const App = () => {
-  const anecdotes = [
+  let anecdotesInitialState = [
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
     'The first 90 percent of the code accounts for the first 10 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
@@ -12,79 +12,72 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
+  anecdotesInitialState = anecdotesInitialState.map(anecdote => {
+    return {
+      text: anecdote,
+      votes: 0,
+    }
+  })
 
   const [selected, setSelected] = useState(0)
+  const [anecdotes, setAnecdotes] = useState(anecdotesInitialState)
 
-  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0))
-
-  const handleAnecdoteClick = () => {
+  const handleRandomClick = () => {
     // real is in [0, anecdotes.length) *math interval notation*
-    const real = Math.random() * anecdotes.length
+    const real = Math.random() * anecdotesInitialState.length
     // integer is in { 0, 1, 2, ..., anecdotes.length-1 } *math set notation*
     const integer = Math.floor(real)
     setSelected(integer)
   }
 
   const handleVoteClick = () => {
-    const clonedVotes = [...votes]
-    clonedVotes[selected] += 1
-    setVotes(clonedVotes)
+    const clonedAnecdotes = [...anecdotes]
+    clonedAnecdotes[selected].votes += 1
+    setAnecdotes(clonedAnecdotes)
   }
 
-  const getIndexOfMostVotedAnecdote = () => {
-    let iMax = 0
-    let voteMax = votes[0]
-    // console.log(iMax, voteMax, anecdotes[0])
-    for (const [i, vote] of votes.entries()) {
-      if (vote > voteMax) {
-        iMax = i
-        voteMax = vote
-      }
-    }
-    return iMax
-  }
+  const mostVotedAnecdote = anecdotes.reduce((prev, curr) => curr.votes > prev.votes ? curr : prev)
+  const randomAnecdote = anecdotes[selected]
 
-  const indexOfMostVotedAnecdote = getIndexOfMostVotedAnecdote()
-  const mostVotedAnecdote = anecdotes[indexOfMostVotedAnecdote]
-  const mostVotedAnecdoteVotes = votes[indexOfMostVotedAnecdote]
-
-  const selectedAnecdote = anecdotes[selected]
-  const selectedAnecdoteVotes = votes[selected]
   return (
     <div>
-      <h2>Anecdote of the day</h2>
-      <p>{selectedAnecdote}</p>
-      <p>has {selectedAnecdoteVotes} {formatVotes(selectedAnecdoteVotes)}</p>
-      <button onClick={handleAnecdoteClick}>next anecdote</button>
+      <Display title="Anecdote of the day" text={randomAnecdote.text} votes={randomAnecdote.votes} />
+      <button onClick={handleRandomClick}>next anecdote</button>
       <button onClick={handleVoteClick}>vote</button>
-      <Leaderboard mostVotedAnecdote={mostVotedAnecdote} mostVotedAnecdoteVotes={mostVotedAnecdoteVotes} />
+      <Leaderboard title="Anecdote with most votes" text={mostVotedAnecdote.text} votes={mostVotedAnecdote.votes} />
     </div>
   )
 }
 
-const formatVotes = (votes) => {
-  if (votes === 1) {
-    return "vote"
-  }
-  return "votes"
-}
-
-const Leaderboard = ({ mostVotedAnecdote, mostVotedAnecdoteVotes }) => {
-  if (mostVotedAnecdoteVotes === 0) {
-    return <></>
+const Display = ({ title, text, votes }) => {
+  const formatVotes = (votes) => {
+    if (votes === 1) {
+      return "vote"
+    }
+    return "votes"
   }
 
   return (
     <>
-      <h2>Anecdote with most votes</h2>
-      <p>{mostVotedAnecdote}</p>
-      <p>has {mostVotedAnecdoteVotes} {formatVotes(mostVotedAnecdoteVotes)}</p>
+      <h2>{title}</h2>
+      <p>{text}</p>
+      <p>has {votes} {formatVotes(votes)}</p>
     </>
   )
 }
-Leaderboard.propTypes = {
-  mostVotedAnecdote: PropTypes.string,
-  mostVotedAnecdoteVotes: PropTypes.number,
+const displayPropTypes = {
+  title: PropTypes.string,
+  text: PropTypes.string,
+  votes: PropTypes.number,
 }
+Display.propTypes = displayPropTypes
+
+const Leaderboard = ({ title, text, votes }) => {
+  if (votes === 0) {
+    return <></>
+  }
+  return <Display title={title} text={text} votes={votes} />
+}
+Leaderboard.propTypes = displayPropTypes
 
 export default App
