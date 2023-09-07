@@ -14,7 +14,9 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
 
-  const handleClick = () => {
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0))
+
+  const handleAnecdoteClick = () => {
     // real is in [0, anecdotes.length) *math interval notation*
     const real = Math.random() * anecdotes.length
     // integer is in { 0, 1, 2, ..., anecdotes.length-1 } *math set notation*
@@ -22,10 +24,26 @@ const App = () => {
     setSelected(integer)
   }
 
+  const handleVoteClick = () => {
+    const clonedVotes = [...votes]
+    clonedVotes[selected] += 1
+    setVotes(clonedVotes)
+  }
+
+  const formatVotes = (votes) => {
+    if (votes === 1) {
+      return "vote"
+    }
+    return "votes"
+  }
+
+  const selectedVotes = votes[selected]
   return (
     <div>
       <p>{anecdotes[selected]}</p>
-      <button onClick={handleClick}>select</button>
+      <p>has {selectedVotes} {formatVotes(selectedVotes)}</p>
+      <button onClick={handleAnecdoteClick}>next anecdote</button>
+      <button onClick={handleVoteClick}>vote</button>
     </div>
   )
 }
