@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PropTypes } from 'prop-types'
 
 const App = () => {
   const anecdotes = [
@@ -30,22 +31,60 @@ const App = () => {
     setVotes(clonedVotes)
   }
 
-  const formatVotes = (votes) => {
-    if (votes === 1) {
-      return "vote"
+  const getIndexOfMostVotedAnecdote = () => {
+    let iMax = 0
+    let voteMax = votes[0]
+    // console.log(iMax, voteMax, anecdotes[0])
+    for (const [i, vote] of votes.entries()) {
+      if (vote > voteMax) {
+        iMax = i
+        voteMax = vote
+      }
     }
-    return "votes"
+    return iMax
   }
 
-  const selectedVotes = votes[selected]
+  const indexOfMostVotedAnecdote = getIndexOfMostVotedAnecdote()
+  const mostVotedAnecdote = anecdotes[indexOfMostVotedAnecdote]
+  const mostVotedAnecdoteVotes = votes[indexOfMostVotedAnecdote]
+
+  const selectedAnecdote = anecdotes[selected]
+  const selectedAnecdoteVotes = votes[selected]
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
-      <p>has {selectedVotes} {formatVotes(selectedVotes)}</p>
+      <h2>Anecdote of the day</h2>
+      <p>{selectedAnecdote}</p>
+      <p>has {selectedAnecdoteVotes} {formatVotes(selectedAnecdoteVotes)}</p>
       <button onClick={handleAnecdoteClick}>next anecdote</button>
       <button onClick={handleVoteClick}>vote</button>
+      <Leaderboard mostVotedAnecdote={mostVotedAnecdote} mostVotedAnecdoteVotes={mostVotedAnecdoteVotes} />
     </div>
   )
+}
+
+const formatVotes = (votes) => {
+  if (votes === 1) {
+    return "vote"
+  }
+  return "votes"
+}
+
+const Leaderboard = ({ mostVotedAnecdote, mostVotedAnecdoteVotes }) => {
+  if (mostVotedAnecdoteVotes === 0) {
+    return <></>
+  }
+
+  return (
+    <>
+      <h2>Anecdote with most votes</h2>
+      <p>{mostVotedAnecdote}</p>
+      <p>has {mostVotedAnecdoteVotes} {formatVotes(mostVotedAnecdoteVotes)}</p>
+    </>
+  )
+}
+Leaderboard.propTypes = {
+  mostVotedAnecdote: PropTypes.string,
+  mostVotedAnecdoteVotes: PropTypes.number,
 }
 
 export default App
