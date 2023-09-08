@@ -2,17 +2,22 @@ import { useState } from 'react'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: "Arto Hellas" }
+    { name: "Arto Hellas" },
+    { name: "teddy" },
   ])
 
   const [newName, setNewName] = useState("")
 
   const addPerson = (event) => {
-    console.log("here")
     event.preventDefault()
-    setPersons(persons.concat({
-      name: newName
-    }))
+    const entryAlreadyExists = persons.some((person) => person.name === newName)
+    if (entryAlreadyExists) {
+      alert(`${newName} already exists`)
+    } else {
+      setPersons(persons.concat({
+        name: newName
+      }))
+    }
   }
 
   const onNameChange = (event) => {
