@@ -49,12 +49,22 @@ const App = () => {
     setQuery(new RegExp(event.target.value, "i"))
   }
 
+  const handleDeleteOf = person => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      phonebookService
+        .delete(person)
+        .then(() => {
+          setPersons(persons.filter(p => p.id != person.id))
+        })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
       <Search onFilterChange={onFilterChange} />
       <Form addPerson={addPerson} onNameChange={onNameChange} onNumberChange={onNumberChange} />
-      <Phonebook query={query} persons={persons} />
+      <Phonebook query={query} persons={persons} handleDeleteOf={handleDeleteOf} />
     </div >
   )
 }
