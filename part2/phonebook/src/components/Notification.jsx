@@ -5,24 +5,20 @@ const Notification = ({ notification }) => {
     return null
   }
 
-  const style = {
-    color: "green",
-    backgroundColor: "lightgrey",
-    borderStyle: "solid",
-    borderColor: "green",
-    borderWidth: 4,
-    borderRadius: 8,
-  }
+  const { message, status } = notification
 
   return (
-    <div style={style}>
-      {notification}
+    <div className={`notification ${status}`}>
+      {message}
     </div>
   )
 }
 
 Notification.propTypes = {
-  notification: PropTypes.string,
+  notification: PropTypes.shape({
+    message: PropTypes.string,
+    status: PropTypes.string,
+  }),
 }
 
 export default Notification

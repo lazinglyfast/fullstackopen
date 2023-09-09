@@ -24,17 +24,30 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const persistedPerson = persons.find(person => person.name === newName)
+    const existingPerson = persons.find(person => person.name === newName)
     const msg = `${newName} is already added to the phonebook, replace the old number with a new one?`
-    if (persistedPerson && window.confirm(msg)) {
-      const personObject = { ...persistedPerson, number: newNumber }
+    if (existingPerson && window.confirm(msg)) {
+      const toServerPerson = { ...existingPerson, number: newNumber }
       phonebookService
-        .update(personObject)
-        .then(serverPerson => {
+        .update(toServerPerson)
+        .then(fromServerPerson => {
           setPersons(persons.map(p => {
-            return p.id == serverPerson.id ? personObject : p
+            return p.id == fromServerPerson.id ? fromServerPerson : p
           }))
-          setNotification(`Changed ${serverPerson.name}'s phone number to ${serverPerson.number}`)
+          const notification = {
+            message: `Changed ${fromServerPerson.name}'s phone number to ${fromServerPerson.number}`,
+            status: "success",
+          }
+          setNotification(notification)
+          setTimeout(() => setNotification(null), TIMEOUT)
+        })
+        .catch(() => {
+          setPersons(persons.map(p => p.id != toServerPerson.id))
+          const notification = {
+            message: `Information of ${toServerPerson.name} has already been removed from server`,
+            status: "failure",
+          }
+          setNotification(notification)
           setTimeout(() => setNotification(null), TIMEOUT)
         })
     } else {
@@ -46,7 +59,11 @@ const App = () => {
         .create(personObject)
         .then(serverPerson => {
           setPersons(persons.concat(serverPerson))
-          setNotification(`Added ${serverPerson.name}`)
+          const notification = {
+            message: `Added ${serverPerson.name}`,
+            status: "success",
+          }
+          setNotification(notification)
           setTimeout(() => setNotification(null), TIMEOUT)
         })
     }
@@ -71,7 +88,11 @@ const App = () => {
         .delete(person)
         .then(() => {
           setPersons(persons.filter(p => p.id != person.id))
-          setNotification(`Deleted ${person.name}`)
+          const notification = {
+            message: `Deleted ${person.name}`,
+            status: "success",
+          }
+          setNotification(notification)
           setTimeout(() => setNotification(null), TIMEOUT)
         })
     }
