@@ -2,19 +2,23 @@ import { useState, useEffect } from "react"
 import Search from "./components/Search"
 import Form from "./components/Form"
 import Phonebook from "./components/Phonebook"
+import Notification from "./components/Notification"
 import phonebookService from "./services/phonebook"
+
+const TIMEOUT = 5000
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
   const [query, setQuery] = useState(new RegExp())
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     phonebookService
       .list()
-      .then(data => {
-        setPersons(data)
+      .then(serverPerson => {
+        setPersons(serverPerson)
       })
   }, [])
 
@@ -26,10 +30,12 @@ const App = () => {
       const personObject = { ...persistedPerson, number: newNumber }
       phonebookService
         .update(personObject)
-        .then(data => {
+        .then(serverPerson => {
           setPersons(persons.map(p => {
-            return p.id == data.id ? personObject : p
+            return p.id == serverPerson.id ? personObject : p
           }))
+          setNotification(`Changed ${serverPerson.name}'s phone number to ${serverPerson.number}`)
+          setTimeout(() => setNotification(null), TIMEOUT)
         })
     } else {
       const personObject = {
@@ -38,8 +44,10 @@ const App = () => {
       }
       phonebookService
         .create(personObject)
-        .then(data => {
-          setPersons(persons.concat(data))
+        .then(serverPerson => {
+          setPersons(persons.concat(serverPerson))
+          setNotification(`Added ${serverPerson.name}`)
+          setTimeout(() => setNotification(null), TIMEOUT)
         })
     }
   }
@@ -63,6 +71,8 @@ const App = () => {
         .delete(person)
         .then(() => {
           setPersons(persons.filter(p => p.id != person.id))
+          setNotification(`Deleted ${person.name}`)
+          setTimeout(() => setNotification(null), TIMEOUT)
         })
     }
   }
@@ -70,6 +80,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Search onFilterChange={onFilterChange} />
       <Form addPerson={addPerson} onNameChange={onNameChange} onNumberChange={onNumberChange} />
       <Phonebook query={query} persons={persons} handleDeleteOf={handleDeleteOf} />
