@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
-import axios from "axios"
 import Search from "./components/Search"
 import Form from "./components/Form"
 import Phonebook from "./components/Phonebook"
+import phonebookService from "./services/phonebook"
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,10 +11,10 @@ const App = () => {
   const [query, setQuery] = useState(new RegExp())
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => {
-        setPersons(response.data)
+    phonebookService
+      .list()
+      .then(data => {
+        setPersons(data)
       })
   }, [])
 
@@ -24,14 +24,15 @@ const App = () => {
     if (entryAlreadyExists) {
       alert(`${newName} already exists`)
     } else {
-      const largestId = persons.reduce((max, person) => {
-        person.id > max ? person.id : max
-      }, Number.MIN_VALUE)
-      setPersons(persons.concat({
-        id: largestId + 1,
+      const personObject = {
         name: newName,
         number: newNumber
-      }))
+      }
+      phonebookService
+        .create(personObject)
+        .then(data => {
+          setPersons(persons.concat(data))
+        })
     }
   }
 
