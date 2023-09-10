@@ -10,7 +10,7 @@ const CountryDetails = ({ countryDetails }) => {
       <h2>{countryDetails.name.common}</h2>
       <p>capital(s):</p>
       <ul>{countryDetails.capital.map(c => <li key={c}>{c}</li>)}</ul>
-      <p>area: {countryDetails.area} km2</p>
+      <p>area: {countryDetails.area} km<sup>2</sup></p>
       <h3>languages:</h3>
       <ul>
         {Object.values(countryDetails.languages).map((v) => <li key={v}>{v}</li>)}
@@ -27,7 +27,7 @@ CountryDetails.propTypes = {
     }),
     capital: PropTypes.arrayOf(PropTypes.string),
     area: PropTypes.number,
-    languages: PropTypes.arrayOf(PropTypes.string),
+    languages: PropTypes.object,
     flags: PropTypes.shape({
       png: PropTypes.string,
     }),

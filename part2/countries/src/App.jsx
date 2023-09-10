@@ -49,10 +49,14 @@ const App = () => {
     }
   }
 
+  const showCountry = (selectedCountryName) => {
+    setCountryName(selectedCountryName)
+  }
+
   return (
     <div>
       find countries <input onChange={onChange} />
-      <CountryNames countryNames={filteredCountryNames} />
+      <CountryNames countryNames={filteredCountryNames} showCountry={showCountry} />
       <CountryDetails countryDetails={countryDetails} />
     </div>
   )
