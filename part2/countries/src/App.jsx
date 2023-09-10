@@ -28,7 +28,19 @@ const App = () => {
     countriesService
       .get(countryName)
       .then((fromServerCountryDetails) => {
-        setCountryDetails(fromServerCountryDetails)
+        countriesService
+          .weather(fromServerCountryDetails.latlng)
+          .then((weather) => {
+            console.log(weather)
+            const icon = weather.weather[0].icon
+            setCountryDetails({
+              ...fromServerCountryDetails,
+              temperature: weather.main.temp,
+              wind: weather.wind.speed,
+              icon: `https://openweathermap.org/img/wn/${icon}@2x.png`,
+
+            })
+          })
       })
   }, [countryName])
 
@@ -39,7 +51,7 @@ const App = () => {
       return
     }
     const regExp = new RegExp(query, "i")
-    // thought just countries.filter(regExp.test) would work
+    // spoiled by rust, thought just countries.filter(regExp.test) would work
     const countryNames = allCountryNames.filter(c => regExp.test(c))
     setFilteredCountryNames(countryNames)
     if (countryNames.length == 1) {
@@ -59,6 +71,7 @@ const App = () => {
       <CountryNames countryNames={filteredCountryNames} showCountry={showCountry} />
       <CountryDetails countryDetails={countryDetails} />
     </div>
+
   )
 }
 
